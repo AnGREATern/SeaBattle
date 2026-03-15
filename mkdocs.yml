@@ -1,0 +1,9 @@
+site_name: SeaBattle Documentation
+
+nav:
+  - Главная: index.md
+  - Glossary: glossary.md
+
+docs_dir: docs
+theme:
+  name: material

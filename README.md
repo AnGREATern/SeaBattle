@@ -2,7 +2,7 @@
 
 ### Документация
 
-https://iu7-85b.gitlab.io/SeaBattle/
+https://angreatern.github.io/SeaBattle/
 
 ### Запуск проекта
 

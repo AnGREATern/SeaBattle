@@ -2,7 +2,7 @@ name: Deploy Docs
 
 on:
   push:
-    branches: [ main, master, KAN-12-docs-generation ]
+    branches: [ main ]
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true

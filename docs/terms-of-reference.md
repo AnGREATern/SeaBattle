@@ -110,7 +110,7 @@
 - `playerBoardId`: идентификатор игрового поля пользователя;
 - `botBoardId`: идентификатор игрового поля бота;
 - `difficulty`: уровень сложности бота (easy, medium, hard);
-- `currentTurn`: идентификатор текущего игрока (кто ходит);
+- `currentTurn`: кто ходит (0 - бот, 1 - пользователь);
 - `status`: статус игры (ship_placement, in_progress, finished);
 - `winner`: победитель (player, bot, null).
 

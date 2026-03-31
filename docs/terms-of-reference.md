@@ -117,14 +117,6 @@
 - `owner`: владелец поля (player, bot);
 - `cells`: матрица 10x10 со значениями состояний клеток (empty, ship, miss, damaged, destroyed).
 
-#### Move (Ход):
-- `id`: уникальный идентификатор хода;
-- `gameId`: идентификатор игры;
-- `player`: кто совершил ход (player, bot);
-- `targetCoordinates`: координата выстрела;
-- `result`: результат выстрела (hit, miss, kill);
-- `timestamp`: время совершения хода.
-
 
 ### Технологический стек
 

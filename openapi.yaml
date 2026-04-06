@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  title: Sea Battle API
+  description: API для игры "Морской бой"
+  version: 1.0.0
+
+paths:
+  /api/v1/start:
+    post:
+      summary: Начать новую игру
+      description: Пользователь выбирает сложность, сервер создаёт уникальную игровую сессию
+
+  /api/v1/ships:
+    post:
+      summary: Расставить корабли
+      description: Пользователь отправляет расположение всех своих кораблей
+
+  /api/v1/shot:
+    post:
+      summary: Сделать выстрел
+      description: Игрок отправляет координаты выстрела
+
+  /api/v1/user-board:
+    get:
+      summary: Получить поле пользователя
+      description: Возвращает текущее поле пользователя после хода бота
+
+  /api/v1/bot-board:
+    get:
+      summary: Получить поле бота
+      description: Возвращает текущее поле бота после хода пользователя

@@ -89,6 +89,20 @@ paths:
         '401':
           description: Нет активной сессии
 
+  /api/v1/game/status:
+    get:
+      summary: Получить статус игры
+      description: Возвращает текущий статус игры и обновлённые поля
+      responses:
+        '200':
+          description: Текущее состояние игры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameStatusResponse'
+        '401':
+          description: Нет активной сессии
+
 components:
   schemas:
     Difficulty:
@@ -177,4 +191,24 @@ components:
       type: object
       properties:
         board:
+          $ref: '#/components/schemas/GameBoard'
+
+    GameStatus:
+      type: integer
+      enum: [0, 1, 2, 3, 4]
+      description: |
+        0 - расстановка кораблей (ship_placement)
+        1 - ход игрока (player_turn)
+        2 - ход бота (bot_turn)
+        3 - победа игрока (player_won)
+        4 - победа бота (bot_won)
+
+    GameStatusResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/GameStatus'
+        userBoard:
+          $ref: '#/components/schemas/GameBoard'
+        botBoard:
           $ref: '#/components/schemas/GameBoard'

@@ -1,0 +1,234 @@
+openapi: 3.1.0
+info:
+  title: Sea Battle API
+  description: API для игры "Морской бой"
+  version: 1.0.0
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/game:
+    post:
+      summary: Начать новую игру
+      description: Пользователь выбирает сложность, сервер создаёт уникальную игровую сессию
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartGameRequest'
+      responses:
+        "201":
+          description: Игра успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - accessToken
+                properties:
+                  accessToken:
+                    type: string
+                    description: JWT токен для авторизации запросов
+        '400':
+          description: Ошибка (некорректная сложность)
+
+  /api/v1/ships:
+    post:
+      summary: Расставить корабли
+      description: Пользователь отправляет поле с расставленными кораблями
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceShipsRequest'
+      responses:
+        '200':
+          description: Корабли успешно расставлены
+        '400':
+          description: Ошибка (некорректная расстановка кораблей)
+        '401':
+          description: Нет активной сессии
+        '403':
+          description: Доступ запрещён (игра не в статусе расстановки кораблей)
+
+  /api/v1/shot:
+    post:
+      summary: Сделать выстрел
+      description: Игрок отправляет координаты выстрела
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShotRequest'
+      responses:
+        '200':
+          description: Выстрел выполнен успешно
+        '400':
+          description: Ошибка (некорректные координаты)
+        '401':
+          description: Нет активной сессии
+        '403':
+          description: Доступ запрещён (игра не в статусе хода игрока)
+
+  /api/v1/board/user:
+    get:
+      summary: Получить поле пользователя
+      description: Возвращает текущее поле пользователя
+      responses:
+        '200':
+          description: Поле пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameBoardResponse'
+        '401':
+          description: Нет активной сессии
+
+  /api/v1/board/bot:
+    get:
+      summary: Получить поле бота
+      description: Возвращает текущее поле бота
+      responses:
+        '200':
+          description: Поле бота
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameBoardResponse'
+        '401':
+          description: Нет активной сессии
+
+  /api/v1/game/status:
+    get:
+      summary: Получить статус игры
+      description: Возвращает текущий статус игры и обновлённые поля
+      responses:
+        '200':
+          description: Текущее состояние игры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameStatusResponse'
+        '401':
+          description: Нет активной сессии
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Difficulty:
+      type: integer
+      enum: [0, 1, 2]
+      description: |
+        0 - лёгкий (easy)
+        1 - средний (medium)
+        2 - сложный (hard)
+
+    # Для расстановки кораблей (0/1)
+    PlacementCell:
+      type: integer
+      enum: [0, 1]
+      description: |
+        0 - пустая клетка (empty)
+        1 - корабль (ship)
+
+    PlacementBoard:
+      type: array
+      minItems: 10
+      maxItems: 10
+      items:
+        type: array
+        minItems: 10
+        maxItems: 10
+        items:
+          $ref: '#/components/schemas/PlacementCell'
+      description: Матрица 10x10 для расстановки кораблей
+
+    # Для игровых полей (расширенные состояния)
+    GameCellState:
+      type: integer
+      enum: [0, 1, 2, 3, 4]
+      description: |
+        0 - пустая клетка (empty)
+        1 - неповрежденный корабль (ship)
+        2 - промах (miss)
+        3 - поврежденный корабль (damaged)
+        4 - уничтоженный корабль (destroyed)
+
+    GameBoard:
+      type: array
+      minItems: 10
+      maxItems: 10
+      items:
+        type: array
+        minItems: 10
+        maxItems: 10
+        items:
+          $ref: '#/components/schemas/GameCellState'
+      description: Матрица 10x10 игрового поля
+
+    ShotRequest:
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          type: integer
+          minimum: 0
+          maximum: 9
+        y:
+          type: integer
+          minimum: 0
+          maximum: 9
+
+    StartGameRequest:
+      type: object
+      required:
+        - difficulty
+      properties:
+        difficulty:
+          $ref: '#/components/schemas/Difficulty'
+
+    PlaceShipsRequest:
+      type: object
+      required:
+        - board
+      properties:
+        board:
+          $ref: '#/components/schemas/PlacementBoard'
+
+    GameBoardResponse:
+      type: object
+      properties:
+        board:
+          $ref: '#/components/schemas/GameBoard'
+
+    GameStatus:
+      type: integer
+      enum: [0, 1, 2, 3, 4]
+      description: |
+        0 - расстановка кораблей (ship_placement)
+        1 - ход игрока (player_turn)
+        2 - ход бота (bot_turn)
+        3 - победа игрока (player_won)
+        4 - победа бота (bot_won)
+
+    GameStatusResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/GameStatus'
+        userBoard:
+          $ref: '#/components/schemas/GameBoard'
+        botBoard:
+          $ref: '#/components/schemas/GameBoard'
